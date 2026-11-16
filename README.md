@@ -118,7 +118,7 @@ A frontend e-commerce and inventory management application built with **Next.js,
 Clone the repository:
 
 ```bash
-git clone YOUR_REPOSITORY_URL
+git clone https://github.com/rafeeqhassani/ecommerce-platform
 ```
 
 Navigate into the project directory:
