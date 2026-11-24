@@ -5,7 +5,15 @@ import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
 
 export default function OrdersPage() {
-  const { orders } = useCart();
+  const { orders, isHydrated } = useCart();
+
+  if (!isHydrated) {
+    return (
+      <main className="mx-auto max-w-4xl px-4 py-8">
+        <p className="text-gray-600">Loading order details...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">

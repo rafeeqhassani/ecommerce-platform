@@ -1,6 +1,16 @@
 "use client";
 
-import { createContext, useContext, useState, useReducer } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useReducer,
+  useEffect,
+} from "react";
+
+import { STORAGE_KEYS } from "@/lib/storage-keys";
+import { getFromLocalStorage, saveToLocalStorage } from "@/lib/localStorage";
+
 import type { Product } from "@/types/product";
 import type { Order, OrderItem } from "@/types/order";
 import { products } from "@/lib/data/products";
@@ -23,6 +33,8 @@ type CartContextType = {
   orders: Order[];
   confirmOrder: (order: Order, items: OrderItem[]) => boolean;
   cancelOrder: (orderId: string) => void;
+
+  isHydrated: boolean;
 };
 
 export type CartItem = {
@@ -49,6 +61,10 @@ type OrdersInventoryAction =
   | {
       type: "CANCEL_ORDER";
       orderId: string;
+    }
+  | {
+      type: "HYDRATE_STATE";
+      payload: OrdersInventoryState;
     };
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -142,15 +158,46 @@ function reducer(
       };
     }
 
+    case "HYDRATE_STATE":
+      return action.payload;
+
     default:
       return state;
   }
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const [isHydrated, setIsHydrated] = useState(false);
+
   const [cart, setCart] = useState<CartItem[]>([]);
 
   const [state, dispatch] = useReducer(reducer, initialOrdersInventoryState);
+
+  useEffect(() => {
+    const savedCart = getFromLocalStorage<CartItem[]>(STORAGE_KEYS.CART, []);
+
+    const savedState = getFromLocalStorage<OrdersInventoryState>(
+      STORAGE_KEYS.ORDERS_INVENTORY,
+      initialOrdersInventoryState,
+    );
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCart(savedCart);
+    dispatch({
+      type: "HYDRATE_STATE",
+      payload: savedState,
+    });
+
+    setIsHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+
+    saveToLocalStorage(STORAGE_KEYS.CART, cart);
+
+    saveToLocalStorage(STORAGE_KEYS.ORDERS_INVENTORY, state);
+  }, [isHydrated, cart, state]);
 
   function addToCart(productId: number) {
     const currentProduct = state.inventory.find(
@@ -267,6 +314,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         updateProduct,
         confirmOrder,
         cancelOrder,
+
+        isHydrated,
       }}
     >
       {children}

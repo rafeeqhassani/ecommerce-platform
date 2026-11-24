@@ -15,13 +15,21 @@ import OrderReview from "@/app/components/OrderReview";
 import { isCartValid } from "@/lib/cart";
 
 export default function CheckoutPage() {
-  const { cart, inventory } = useCart();
+  const { cart, inventory, isHydrated } = useCart();
 
   const cartIsValid = isCartValid(inventory, cart);
 
   const [shippingData, setShippingData] = useState<ShippingData | null>(null);
   const [billingData, setBillingData] = useState<BillingData | null>(null);
   const [orderConfirmed, setOrderConfirmed] = useState(false);
+
+  if (!isHydrated) {
+    return (
+      <main className="mx-auto max-w-4xl px-4 py-8">
+        <p className="text-gray-600">Loading order details...</p>
+      </main>
+    );
+  }
 
   function handleOrderConfirmed() {
     setOrderConfirmed(true);

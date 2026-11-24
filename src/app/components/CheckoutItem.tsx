@@ -20,7 +20,7 @@ export default function CheckoutItem({ item }: { item: cartItemType }) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
       <h2 className="mb-3 text-lg font-semibold text-gray-900">
-        {currentInventoryProduct?.name}
+        {currentInventoryProduct.name}
       </h2>
       <p className="mb-2 text-sm text-gray-600">
         Quantity:{" "}

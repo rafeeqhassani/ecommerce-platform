@@ -5,7 +5,15 @@ import { useCart } from "@/app/context/CartContext";
 import AdminProductCard from "@/app/components/AdminProductCard";
 
 export default function AdminProductsPage() {
-  const { inventory } = useCart();
+  const { inventory, isHydrated } = useCart();
+
+  if (!isHydrated) {
+    return (
+      <div>
+        <p className="text-gray-600">Loading products...</p>
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -5,7 +5,15 @@ import { useCart } from "@/app/context/CartContext";
 import { getOrderTotal } from "@/lib/order";
 
 export default function OrderDetailsClient({ orderId }: { orderId: string }) {
-  const { orders, cancelOrder } = useCart();
+  const { orders, cancelOrder, isHydrated } = useCart();
+
+  if (!isHydrated) {
+    return (
+      <main className="mx-auto max-w-4xl px-4 py-8">
+        <p className="text-gray-600">Loading order details...</p>
+      </main>
+    );
+  }
 
   const order = orders.find((item) => item.id === orderId);
 

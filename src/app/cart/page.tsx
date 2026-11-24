@@ -9,7 +9,15 @@ import CartSummary from "@/app/components/CartSummary";
 import CartEmptyState from "@/app/components/CartEmptyState";
 
 export default function CartPage() {
-  const { cart } = useCart();
+  const { cart, isHydrated } = useCart();
+
+  if (!isHydrated) {
+    return (
+      <main className="mx-auto max-w-4xl px-4 py-8">
+        <p className="text-gray-600">Loading order details...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
